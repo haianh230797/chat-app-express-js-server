@@ -1,13 +1,12 @@
 const express = require('express');
-const http = require('http');
-const fs = require('fs');
-const formidable = require('formidable');
 const bodyParser = require('body-parser');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 const multer = require('multer');
 const path = require('path');
+
+const Fire = require('./Fire');
 
 const port = 3000;
 
@@ -52,11 +51,20 @@ io.on('connection', (socket) => {
   socket.join('chat');
   console.log('a user connected :D', socket.id);
   //---------get initial data
-    io.to('chat').emit('getData', arr);
+  io.to('chat').emit('getData', arr);
   //-----------------------------
   socket.on('chat message', (msg) => {
     arr.push(msg);
     io.to('chat').emit('chat message', msg);
+  });
+  socket.on('chat image', (msg) => {
+    Fire.uploadPhotoAsync (msg.image)
+    .then(data=>{
+      console.log(data)
+    })
+    .catch(err => console.log(err))
+    arr.push(msg);
+    io.to('chat').emit('chat image', msg);
   });
 });
 
