@@ -3,23 +3,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
-const multer = require('multer');
-const path = require('path');
-
-const Fire = require('./Fire');
 
 const port = 3000;
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads/'));
-  },
-
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage: storage }); // for parsing multipart/form-data
 
 let arr = [
   {
@@ -58,11 +43,6 @@ io.on('connection', (socket) => {
     io.to('chat').emit('chat message', msg);
   });
   socket.on('chat image', (msg) => {
-    Fire.uploadPhotoAsync (msg.image)
-    .then(data=>{
-      console.log(data)
-    })
-    .catch(err => console.log(err))
     arr.push(msg);
     io.to('chat').emit('chat image', msg);
   });
