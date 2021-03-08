@@ -12,14 +12,6 @@ io.on('connection', (socket) => {
   socket.join('chat');
   console.log('a user connected :D', socket.id);
 
-  var hs = socket.handshake;
-  users[hs.session.username] = socket.id;
-  clients[socket.id] = socket;
-  
-  socket.on('disconnect', function () {
-    delete clients[socket.id]; // remove the client from the array
-    delete users[hs.session.username]; // remove connected user & socket.id
-  });
   //---------get initial data
   io.to('chat').emit('getData', arr);
   //-----------------------------
